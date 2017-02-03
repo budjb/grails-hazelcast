@@ -1,6 +1,7 @@
 package com.budjb.hazelcast
 
 import com.hazelcast.config.Config
+import com.hazelcast.config.MapConfig
 import com.hazelcast.core.Hazelcast
 import com.hazelcast.core.HazelcastInstance
 import spock.lang.Specification
@@ -25,6 +26,12 @@ class HazelcastInstanceServiceSpec extends Specification {
                     multicastConfig: [
                         enabled: false
                     ]
+                ]
+            ],
+            mapConfig: [
+                [
+                    name: 'foomap',
+                    timeToLiveSeconds: 5000
                 ]
             ]
         ]
