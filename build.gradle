@@ -11,17 +11,20 @@ buildscript {
     }
 }
 
-version "0.1.0"
+version "0.1.1"
 group "com.budjb"
 
 apply plugin:"eclipse"
 apply plugin:"idea"
 apply plugin:"org.grails.grails-plugin"
-apply plugin:"org.grails.grails-plugin-publish"
+//apply plugin:"org.grails.grails-plugin-publish"
+apply plugin: "maven-publish"
 
 ext {
     grailsVersion = project.grailsVersion
     gradleWrapperVersion = project.gradleWrapperVersion
+    MAVEN_USERNAME = 'VDO_MAVEN_USERNAME'
+    MAVEN_PASSWORD = 'VDO_MAVEN_PASSWORD'
 }
 
 repositories {
@@ -51,9 +54,10 @@ dependencies {
     provided "org.grails:grails-plugin-services"
     testCompile "org.grails:grails-plugin-testing"
 
-    compile 'com.hazelcast:hazelcast:3.6.3'
+    compile 'com.hazelcast:hazelcast:3.7.5'
 }
 
+/*
 grailsPublish {
     // TODO: Provide values here
     user = 'user'
@@ -67,4 +71,46 @@ grailsPublish {
     developers = [johndoe:"John Doe"]
     portalUser = ""
     portalPassword = ""    
+}
+*/
+
+publishing {
+    repositories {
+        maven {
+            url "https://maven.pc.rackspace.com/artifactory/plugins-release-local"
+            credentials {
+                username System.getenv(MAVEN_USERNAME)
+                password System.getenv(MAVEN_PASSWORD)
+            }
+        }
+    }
+    publications {
+        plugin(MavenPublication) {
+            from components.java
+
+            pom.withXml {
+                def pomNode = asNode()
+                pomNode.dependencyManagement.replaceNode {}
+
+                // simply remove dependencies without a version
+                // version-less dependencies are handled with dependencyManagement
+                // see https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/8 for more complete solutions
+                pomNode.dependencies.dependency.findAll {
+                    it.version.text().isEmpty()
+                }.each {
+                    it.replaceNode {}
+                }
+
+                // correct dependency scope for runtime vs compile
+                asNode().dependencies.'*'.findAll() {
+                    it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+                        dep.name == it.artifactId.text()
+                    }
+                }.each { it.scope*.value = 'compile' }
+            }
+
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
 }
