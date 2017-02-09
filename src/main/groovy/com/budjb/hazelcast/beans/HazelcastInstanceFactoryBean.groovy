@@ -28,7 +28,7 @@ class HazelcastInstanceFactoryBean implements FactoryBean<HazelcastInstance>, In
 
     @Override
     Class<?> getObjectType() {
-        return Map.class
+        return HazelcastInstance.class
     }
 
     @Override
