@@ -129,4 +129,21 @@ class HazelcastInstanceService implements InitializingBean {
 
         return instance
     }
+
+    /**
+     * Shuts down a Hazelcast instance.
+     *
+     * @param name Name of the Hazelcast instance.
+     * @throws IllegalArgumentException when no instance exists for the given name.
+     */
+    void shutdownInstance(String name) {
+        getInstance(name).shutdown()
+    }
+
+    /**
+     * Shutdown all Hazelcast instances on <em>this</em> JVM.
+     */
+    void shutdownAll() {
+        Hazelcast.shutdownAll()
+    }
 }

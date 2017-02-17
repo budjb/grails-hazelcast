@@ -5,11 +5,11 @@ import com.hazelcast.config.Config
 import com.hazelcast.core.Hazelcast
 import spock.lang.Specification
 
-class HazelcastMapFactoryBeanSpec extends Specification {
-    void 'When a HazelcastMapFactoryBean is created but is missing the instanceName, an IllegalArgumentException is thrown'() {
+class HazelcastListFactoryBeanSpec extends Specification {
+    void 'When a HazelcastListFactoryBean is created but is missing the instanceName, an IllegalArgumentException is thrown'() {
         setup:
-        HazelcastMapFactoryBean factoryBean = new HazelcastMapFactoryBean()
-        factoryBean.mapName = 'foo'
+        HazelcastListFactoryBean factoryBean = new HazelcastListFactoryBean()
+        factoryBean.listName = 'foo'
 
         when:
         factoryBean.afterPropertiesSet()
@@ -18,9 +18,9 @@ class HazelcastMapFactoryBeanSpec extends Specification {
         thrown IllegalArgumentException
     }
 
-    void 'When a HazelcastMapFactoryBean is created but is missing the mapName, an IllegalArgumentException is thrown'() {
+    void 'When a HazelcastListFactoryBean is created but is missing the listName, an IllegalArgumentException is thrown'() {
         setup:
-        HazelcastMapFactoryBean factoryBean = new HazelcastMapFactoryBean()
+        HazelcastListFactoryBean factoryBean = new HazelcastListFactoryBean()
         factoryBean.instanceName = 'foo'
 
         when:
@@ -30,7 +30,7 @@ class HazelcastMapFactoryBeanSpec extends Specification {
         thrown IllegalArgumentException
     }
 
-    void 'When a HazelcastMapFactoryBean is created, it returns the correct Hazelcast map'() {
+    void 'When a HazelcastListFactoryBean is created, it returns the correct Hazelcast list'() {
         setup:
         Config config = new Config()
         config.instanceName = 'tmp'
@@ -39,18 +39,18 @@ class HazelcastMapFactoryBeanSpec extends Specification {
         HazelcastInstanceService hazelcastInstanceService = new HazelcastInstanceService([])
         hazelcastInstanceService.createInstance(config)
 
-        HazelcastMapFactoryBean factoryBean = new HazelcastMapFactoryBean()
+        HazelcastListFactoryBean factoryBean = new HazelcastListFactoryBean()
         factoryBean.hazelcastInstanceService = hazelcastInstanceService
         factoryBean.instanceName = 'tmp'
-        factoryBean.mapName = 'foo'
+        factoryBean.listName = 'foo'
         factoryBean.afterPropertiesSet()
 
         when:
         Object object = factoryBean.getObject()
 
         then:
-        object instanceof Map
-        object == Hazelcast.getHazelcastInstanceByName('tmp').getMap('foo')
+        object instanceof List
+        object == Hazelcast.getHazelcastInstanceByName('tmp').getList('foo')
 
         cleanup:
         hazelcastInstanceService.shutdownInstance(factoryBean.instanceName)
