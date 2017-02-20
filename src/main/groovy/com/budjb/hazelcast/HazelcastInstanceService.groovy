@@ -6,6 +6,8 @@ import com.hazelcast.core.HazelcastInstance
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.InitializingBean
 
+import java.util.concurrent.locks.Lock
+
 /**
  * Service that assists with creating and retrieving Hazelcast instances.
  */
@@ -136,7 +138,7 @@ class HazelcastInstanceService implements InitializingBean {
      * @param name Name of the Hazelcast instance.
      * @throws IllegalArgumentException when no instance exists for the given name.
      */
-    void shutdownInstance(String name) {
+    void shutdownInstance(String name) throws IllegalArgumentException {
         getInstance(name).shutdown()
     }
 

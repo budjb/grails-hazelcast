@@ -6,6 +6,8 @@ import com.hazelcast.core.Hazelcast
 import com.hazelcast.core.HazelcastInstance
 import spock.lang.Specification
 
+import java.util.concurrent.locks.Lock
+
 class HazelcastInstanceServiceSpec extends Specification {
     HazelcastInstanceService hazelcastInstanceService
 
@@ -15,8 +17,10 @@ class HazelcastInstanceServiceSpec extends Specification {
 
     void "When a map configuration is parsed, the proper Hazelcast configuration is returned"() {
         setup:
+        final String INSTANCE_NAME = 'instance1'
+
         Map instanceConfiguration = [
-            instanceName : 'instance1',
+            instanceName : INSTANCE_NAME,
             groupConfig  : [
                 name    : 'group1',
                 password: 'pwd1'
@@ -66,9 +70,11 @@ class HazelcastInstanceServiceSpec extends Specification {
 
     void "When an application starts, all Hazelcast instances are created"() {
         setup:
+        final String INSTANCE_NAME = 'instance1'
+
         List<Map> instanceConfigurations = [
             [
-                instanceName : 'instance1',
+                instanceName : INSTANCE_NAME,
                 groupConfig  : [
                     name    : 'group1',
                     password: 'pwd1'
@@ -89,7 +95,40 @@ class HazelcastInstanceServiceSpec extends Specification {
 
         then:
         HazelcastInstance instance = Hazelcast.getHazelcastInstanceByName('instance1')
-        instance.name == 'instance1'
-        hazelcastInstanceService.getInstance('instance1') == instance
+        instance.name == INSTANCE_NAME
+        hazelcastInstanceService.getInstance(INSTANCE_NAME) == instance
+
+        cleanup:
+        Hazelcast.getHazelcastInstanceByName(INSTANCE_NAME).shutdown()
+    }
+
+    void 'When shutdownInstance() is called, the specified instance is shut down'() {
+        setup:
+        final String INSTANCE_NAME = 'instance1'
+
+        List<Map> instanceConfigurations = [
+            [
+                instanceName : INSTANCE_NAME,
+                groupConfig  : [
+                    name    : 'group1',
+                    password: 'pwd1'
+                ],
+                networkConfig: [
+                    join: [
+                        multicastConfig: [
+                            enabled: false
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        hazelcastInstanceService = new HazelcastInstanceService(instanceConfigurations)
+        hazelcastInstanceService.afterPropertiesSet()
+
+        when:
+        hazelcastInstanceService.shutdownInstance(INSTANCE_NAME)
+
+        then:
+        !Hazelcast.getHazelcastInstanceByName(INSTANCE_NAME)
     }
 }
