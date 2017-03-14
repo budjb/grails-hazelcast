@@ -1,12 +1,9 @@
-package com.budjb.hazelcast
+package org.grails.plugins.hazelcast
 
 import com.hazelcast.config.Config
-import com.hazelcast.config.MapConfig
 import com.hazelcast.core.Hazelcast
 import com.hazelcast.core.HazelcastInstance
 import spock.lang.Specification
-
-import java.util.concurrent.locks.Lock
 
 class HazelcastInstanceServiceSpec extends Specification {
     HazelcastInstanceService hazelcastInstanceService
@@ -32,9 +29,9 @@ class HazelcastInstanceServiceSpec extends Specification {
                     ]
                 ]
             ],
-            mapConfig: [
+            mapConfig    : [
                 [
-                    name: 'foomap',
+                    name             : 'foomap',
                     timeToLiveSeconds: 5000
                 ]
             ]

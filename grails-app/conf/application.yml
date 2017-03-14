@@ -2,4 +2,4 @@
 grails:
     profile: plugin
     codegen:
-        defaultPackage: com.budjb.hazelcast
+        defaultPackage: org.grails.plugins.hazelcast

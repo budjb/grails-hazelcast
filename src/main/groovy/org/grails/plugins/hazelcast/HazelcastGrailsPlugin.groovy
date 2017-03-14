@@ -1,10 +1,8 @@
-package com.budjb.hazelcast
+package org.grails.plugins.hazelcast
 
 import grails.plugins.Plugin
-import groovy.util.logging.Slf4j
 
-@Slf4j
-class GrailsHazelcastGrailsPlugin extends Plugin {
+class HazelcastGrailsPlugin extends Plugin {
     /**
      * The version or versions of Grails the plugin is designed for.
      */
@@ -23,7 +21,7 @@ class GrailsHazelcastGrailsPlugin extends Plugin {
     /**
      * Author email address.
      */
-    def authorEmail = "TODO"
+    def authorEmail = "anil.manthina@gmail.com"
 
     /**
      * Plugin description.
@@ -33,7 +31,7 @@ class GrailsHazelcastGrailsPlugin extends Plugin {
     /**
      * URL to the plugin's documentation.
      */
-    def documentation = "TODO"
+    def documentation = "https://budjb.github.io/grails-hazelcast/latest"
 
     /**
      * Plugin license.
@@ -50,12 +48,12 @@ class GrailsHazelcastGrailsPlugin extends Plugin {
     /**
      * Location of the plugin's issue tracker.
      */
-    def issueManagement = [system: "GITHUB", url: "TODO"]
+    def issueManagement = [system: "GITHUB", url: "https://github.com/budjb/grails-hazelcast/issues"]
 
     /**
      * Online location of the plugin's browseable source code.
      */
-    def scm = [url: "TODO"]
+    def scm = [url: "https://github.com/budjb/grails-hazelcast"]
 
     /**
      * Spring bean creation.

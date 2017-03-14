@@ -1,15 +1,17 @@
-package com.budjb.hazelcast.beans
+package org.grails.plugins.hazelcast
 
-import com.budjb.hazelcast.HazelcastInstanceService
 import com.hazelcast.config.Config
 import com.hazelcast.core.Hazelcast
+import org.grails.plugins.hazelcast.beans.HazelcastLockFactoryBean
 import spock.lang.Specification
 
-class HazelcastSetFactoryBeanSpec extends Specification {
-    void 'When a HazelcastSetFactoryBean is created but is missing the instanceName, an IllegalArgumentException is thrown'() {
+import java.util.concurrent.locks.Lock
+
+class HazelcastLocktFactoryBeanSpec extends Specification {
+    void 'When a HazelcastLockFactoryBean is created but is missing the instanceName, an IllegalArgumentException is thrown'() {
         setup:
-        HazelcastSetFactoryBean factoryBean = new HazelcastSetFactoryBean()
-        factoryBean.setName = 'foo'
+        HazelcastLockFactoryBean factoryBean = new HazelcastLockFactoryBean()
+        factoryBean.lockName = 'foo'
 
         when:
         factoryBean.afterPropertiesSet()
@@ -18,9 +20,9 @@ class HazelcastSetFactoryBeanSpec extends Specification {
         thrown IllegalArgumentException
     }
 
-    void 'When a HazelcastSetFactoryBean is created but is missing the setName, an IllegalArgumentException is thrown'() {
+    void 'When a HazelcastLockFactoryBean is created but is missing the lockName, an IllegalArgumentException is thrown'() {
         setup:
-        HazelcastSetFactoryBean factoryBean = new HazelcastSetFactoryBean()
+        HazelcastLockFactoryBean factoryBean = new HazelcastLockFactoryBean()
         factoryBean.instanceName = 'foo'
 
         when:
@@ -30,7 +32,7 @@ class HazelcastSetFactoryBeanSpec extends Specification {
         thrown IllegalArgumentException
     }
 
-    void 'When a HazelcastSetFactoryBean is created, it returns the correct Hazelcast set'() {
+    void 'When a HazelcastLockFactoryBean is created, it returns the correct Hazelcast lock'() {
         setup:
         Config config = new Config()
         config.instanceName = 'tmp'
@@ -39,18 +41,18 @@ class HazelcastSetFactoryBeanSpec extends Specification {
         HazelcastInstanceService hazelcastInstanceService = new HazelcastInstanceService([])
         hazelcastInstanceService.createInstance(config)
 
-        HazelcastSetFactoryBean factoryBean = new HazelcastSetFactoryBean()
+        HazelcastLockFactoryBean factoryBean = new HazelcastLockFactoryBean()
         factoryBean.hazelcastInstanceService = hazelcastInstanceService
         factoryBean.instanceName = 'tmp'
-        factoryBean.setName = 'foo'
+        factoryBean.lockName = 'foo'
         factoryBean.afterPropertiesSet()
 
         when:
         Object object = factoryBean.getObject()
 
         then:
-        object instanceof Set
-        object == Hazelcast.getHazelcastInstanceByName('tmp').getSet('foo')
+        object instanceof Lock
+        object == Hazelcast.getHazelcastInstanceByName('tmp').getLock('foo')
 
         cleanup:
         hazelcastInstanceService.shutdownInstance(factoryBean.instanceName)

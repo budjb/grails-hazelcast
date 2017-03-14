@@ -1,15 +1,15 @@
-package com.budjb.hazelcast.beans
+package org.grails.plugins.hazelcast
 
-import com.budjb.hazelcast.HazelcastInstanceService
 import com.hazelcast.config.Config
 import com.hazelcast.core.Hazelcast
+import org.grails.plugins.hazelcast.beans.HazelcastSetFactoryBean
 import spock.lang.Specification
 
-class HazelcastMapFactoryBeanSpec extends Specification {
-    void 'When a HazelcastMapFactoryBean is created but is missing the instanceName, an IllegalArgumentException is thrown'() {
+class HazelcastSetFactoryBeanSpec extends Specification {
+    void 'When a HazelcastSetFactoryBean is created but is missing the instanceName, an IllegalArgumentException is thrown'() {
         setup:
-        HazelcastMapFactoryBean factoryBean = new HazelcastMapFactoryBean()
-        factoryBean.mapName = 'foo'
+        HazelcastSetFactoryBean factoryBean = new HazelcastSetFactoryBean()
+        factoryBean.setName = 'foo'
 
         when:
         factoryBean.afterPropertiesSet()
@@ -18,9 +18,9 @@ class HazelcastMapFactoryBeanSpec extends Specification {
         thrown IllegalArgumentException
     }
 
-    void 'When a HazelcastMapFactoryBean is created but is missing the mapName, an IllegalArgumentException is thrown'() {
+    void 'When a HazelcastSetFactoryBean is created but is missing the setName, an IllegalArgumentException is thrown'() {
         setup:
-        HazelcastMapFactoryBean factoryBean = new HazelcastMapFactoryBean()
+        HazelcastSetFactoryBean factoryBean = new HazelcastSetFactoryBean()
         factoryBean.instanceName = 'foo'
 
         when:
@@ -30,7 +30,7 @@ class HazelcastMapFactoryBeanSpec extends Specification {
         thrown IllegalArgumentException
     }
 
-    void 'When a HazelcastMapFactoryBean is created, it returns the correct Hazelcast map'() {
+    void 'When a HazelcastSetFactoryBean is created, it returns the correct Hazelcast set'() {
         setup:
         Config config = new Config()
         config.instanceName = 'tmp'
@@ -39,18 +39,18 @@ class HazelcastMapFactoryBeanSpec extends Specification {
         HazelcastInstanceService hazelcastInstanceService = new HazelcastInstanceService([])
         hazelcastInstanceService.createInstance(config)
 
-        HazelcastMapFactoryBean factoryBean = new HazelcastMapFactoryBean()
+        HazelcastSetFactoryBean factoryBean = new HazelcastSetFactoryBean()
         factoryBean.hazelcastInstanceService = hazelcastInstanceService
         factoryBean.instanceName = 'tmp'
-        factoryBean.mapName = 'foo'
+        factoryBean.setName = 'foo'
         factoryBean.afterPropertiesSet()
 
         when:
         Object object = factoryBean.getObject()
 
         then:
-        object instanceof Map
-        object == Hazelcast.getHazelcastInstanceByName('tmp').getMap('foo')
+        object instanceof Set
+        object == Hazelcast.getHazelcastInstanceByName('tmp').getSet('foo')
 
         cleanup:
         hazelcastInstanceService.shutdownInstance(factoryBean.instanceName)

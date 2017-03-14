@@ -1,4 +1,4 @@
-package com.budjb.hazelcast
+package org.grails.plugins.hazelcast
 
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration

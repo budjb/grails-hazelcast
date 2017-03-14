@@ -1,7 +1,7 @@
-package com.budjb.hazelcast.beans
+package org.grails.plugins.hazelcast.beans
 
-import com.budjb.hazelcast.HazelcastInstanceService
 import com.hazelcast.core.HazelcastInstance
+import org.grails.plugins.hazelcast.HazelcastInstanceService
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired

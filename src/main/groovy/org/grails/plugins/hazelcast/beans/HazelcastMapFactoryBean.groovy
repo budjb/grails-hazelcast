@@ -1,16 +1,17 @@
-package com.budjb.hazelcast.beans
+package org.grails.plugins.hazelcast.beans
 
-import com.budjb.hazelcast.HazelcastInstanceService
+import org.grails.plugins.hazelcast.HazelcastInstanceService
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 
-import java.util.concurrent.locks.Lock
-
 /**
- * A {@link FactoryBean} that exposes a distributed Hazelcast lock as a Spring bean.
+ * A {@link FactoryBean} that exposes a distributed Hazelcast map as a Spring bean.
+ *
+ * @param < K >
+ * @param < V >
  */
-class HazelcastLockFactoryBean implements FactoryBean<Lock>, InitializingBean {
+class HazelcastMapFactoryBean<K, V> implements FactoryBean<Map<K, V>>, InitializingBean {
     /**
      * Hazelcast instance service.
      */
@@ -23,41 +24,29 @@ class HazelcastLockFactoryBean implements FactoryBean<Lock>, InitializingBean {
     String instanceName
 
     /**
-     * Name of the hazelcast lock.
+     * Name of the hazelcast map.
      */
-    String lockName
+    String mapName
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    Lock getObject() throws Exception {
-        return hazelcastInstanceService.getInstance(instanceName).getLock(lockName)
+    Map<K, V> getObject() throws Exception {
+        return hazelcastInstanceService.getInstance(instanceName).getMap(mapName)
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     Class<?> getObjectType() {
-        return Lock.class
+        return Map.class
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     boolean isSingleton() {
         return true
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     void afterPropertiesSet() throws Exception {
-        if (!lockName) {
-            throw new IllegalArgumentException('name of the Hazelcast lock may not be null or empty')
+        if (!mapName) {
+            throw new IllegalArgumentException('name of the Hazelcast map may not be null or empty')
         }
 
         if (!instanceName) {

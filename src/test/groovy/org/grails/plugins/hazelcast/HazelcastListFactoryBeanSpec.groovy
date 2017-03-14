@@ -1,8 +1,8 @@
-package com.budjb.hazelcast.beans
+package org.grails.plugins.hazelcast
 
-import com.budjb.hazelcast.HazelcastInstanceService
 import com.hazelcast.config.Config
 import com.hazelcast.core.Hazelcast
+import org.grails.plugins.hazelcast.beans.HazelcastListFactoryBean
 import spock.lang.Specification
 
 class HazelcastListFactoryBeanSpec extends Specification {
