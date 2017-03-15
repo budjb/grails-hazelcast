@@ -1,0 +1,37 @@
+The *HazelcastListFactoryBean* can be used to create Hazelcast Lists as beans by declaring them in
+@grails-app/init/<package>/Application.groovy@:
+
+{code}
+class Application extends GrailsAutoConfiguration {
+    static void main(String[] args) {
+        GrailsApp.run(Application, args)
+    }
+
+    @Override
+    Closure doWithSpring() {{->
+        'myList'(HazelcastListFactoryBean) {
+            instanceName = 'myInstance'
+            listName = 'myList'
+        }
+    }}
+}
+{code}
+
+The bean can then be used in other managed Spring beans:
+
+{code}
+class MyClass {
+    /**
+     * MyList
+     */
+    @Autowired
+    List<String> myList
+
+    void process() {
+        myList.putAll('foo', 'bar', 'baz')
+        String foo = myList[0]
+        myList << ['foo']
+        myList[0] == myList[-1]
+    }
+}
+{code}

@@ -1,0 +1,51 @@
+The *HazelcastLockFactoryBean* can be used to create Hazelcast Locks as beans by declaring them in
+@grails-app/init/<package>/Application.groovy@:
+
+{code}
+class Application extends GrailsAutoConfiguration {
+    static void main(String[] args) {
+        GrailsApp.run(Application, args)
+    }
+
+    @Override
+    Closure doWithSpring() {{->
+        'myLLock'(HazelcastLockFactoryBean) {
+            instanceName = 'myInstance'
+            lockName = 'myLock'
+        }
+    }}
+}
+{code}
+
+The bean can then be used in other managed Spring beans:
+
+{code}
+@Slf4j
+class MyClass {
+    /**
+     * MyLock
+     */
+    @Autowired
+    ILock myLock
+
+    void process() {
+        if (!lock.tryLock(60000, TimeUnit.MILLISECONDS, 600000, TimeUnit.MILLISECONDS)) {
+            log.warn("Lock failed.")
+            return
+        }
+
+        try {
+            // ...
+        } catch (Exception e) {
+            // ...
+        } finally {
+            try {
+                lock.unlock()
+                 log.trace("Mutex lock released")
+            } catch (IllegalMonitorStateException ignored) {
+                log.warn("lock expired")
+            }
+        }
+    }
+}
+{code}
