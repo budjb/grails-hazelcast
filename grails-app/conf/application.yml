@@ -3,3 +3,6 @@ grails:
     profile: plugin
     codegen:
         defaultPackage: org.grails.plugins.hazelcast
+    doc:
+        title: Hazelcast Plugin
+        authors: Bud Byrd, Anil Manthina, Aaron Brown
