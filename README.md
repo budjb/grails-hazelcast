@@ -3,4 +3,4 @@
 
 # Grails Hazelcast Plugin
 
-TODO: documentation
+See the documentation at [https://budjb.github.io/grails-hazelcast/latest](https://budjb.github.io/grails-hazelcast/latest).
