@@ -1,0 +1,21 @@
+A configuration of the Hazelcast Instance might look like the following:
+
+{code}
+hazelcast:
+    instances:
+      - instanceName: myInstance
+        groupConfig:
+            name: myGroup
+            password: secret
+        networkConfig:
+            join:
+                multicastConfig:
+                    enabled: false
+        mapConfig:
+            name: myMap
+            timeToLiveSeconds: 600
+{code}
+
+In general, the elements documented in [Hazelcast Configuration documentation|
+http://docs.hazelcast.org/docs/3.3/manual/html/config.html] can be directly applied as a nested key-value DSL-Style
+Configuration.

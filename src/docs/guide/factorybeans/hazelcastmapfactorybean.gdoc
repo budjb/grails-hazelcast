@@ -1,0 +1,44 @@
+The *HazelcastMapFactoryBean* can be used to create Hazelcast Maps as beans by declaring them in
+@grails-app/init/<package>/Application.groovy@:
+
+{code}
+class Application extends GrailsAutoConfiguration {
+    static void main(String[] args) {
+        GrailsApp.run(Application, args)
+    }
+
+    @Override
+    Closure doWithSpring() {{->
+        'myMap'(HazelcastMapFactoryBean) {
+            instanceName = 'myInstance'
+            mapName = 'myMap'
+        }
+
+        'myClass'(MyClass) {
+            // For Maps, it may be best to reference
+            // rather than use @Autowired due to bean
+            // validation logic.
+            myMap = ref('myMap')
+        }
+    }}
+}
+{code}
+
+The bean can then be used in other managed Spring beans:
+
+{code}
+class MyClass {
+    /**
+     * MyMap
+     */
+    Map<String, Object> myMap
+
+    cache(String key, Object value) {
+        myMap[(key)[ = value
+    }
+
+    Object fetch(String key) {
+        return myMap[key]
+    }
+}
+{code}

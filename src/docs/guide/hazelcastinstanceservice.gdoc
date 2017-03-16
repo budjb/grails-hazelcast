@@ -1,0 +1,4 @@
+The plugin provides a *HazelcastInstanceService* to help manage Hazelcast Instances.
+
+The methods found within can be used to retrieve Hazelcast Instances, which provides access to the Hazelcast Instance
+and its methods. There are also a light family of methods for shutting down one or all instances for convenience.

@@ -1,0 +1,1 @@
+Configuration of Hazelcast instance is done in your project's @grails-app/conf/application.yml@ file.

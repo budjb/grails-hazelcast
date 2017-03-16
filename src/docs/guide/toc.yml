@@ -1,0 +1,11 @@
+introduction: Introduction
+configuration:
+    title: Configuration
+    hazelcastinstance: HazelcastInstance Configuration
+factorybeans:
+    title: Hazelcast Factory Beans
+    hazelcastmapfactorybean: HazelcastMapFactoryBean
+    hazelcastsetfactorybean: HazelcastSetFactoryBean
+    hazelcastlistfactorybean: HazelcastListFactoryBean
+    hazelcastlockfactorybean: HazelcastLockFactoryBean
+hazelcastinstanceservice: HazelcastInstanceService
