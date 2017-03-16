@@ -1,0 +1,6 @@
+.idea/
+.gradle/
+build/
+.asscache/
+out/
+jaxrs-example/
