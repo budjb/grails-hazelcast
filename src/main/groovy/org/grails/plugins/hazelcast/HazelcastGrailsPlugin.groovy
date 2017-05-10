@@ -61,7 +61,25 @@ class HazelcastGrailsPlugin extends Plugin {
      */
     Closure doWithSpring() {
         { ->
-            hazelcastInstanceService(HazelcastInstanceService, grailsApplication.config.hazelcast.instances ?: [])
+            // Creating the Hazelcast instances must happen very early in the initialization
+            // process so that other beans that require it (such as servlet filters) have their
+            // requires instances already created.
+            HazelcastInstanceInstantiator instantiator = new HazelcastInstanceInstantiator()
+            instantiator.createInstances(grailsApplication.config.hazelcast.instances ?: [])
+
+            hazelcastInstanceService(HazelcastInstanceService) {
+                delegate.instantiator = instantiator
+            }
         }
+    }
+
+    /**
+     * Shutdown handler.
+     *
+     * @param event
+     */
+    @Override
+    void onShutdown(Map<String, Object> event) {
+        applicationContext.getBean('hazelcastInstanceService', HazelcastInstanceService).shutdownAll()
     }
 }

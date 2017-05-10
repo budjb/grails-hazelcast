@@ -9,3 +9,4 @@ factorybeans:
     hazelcastlistfactorybean: HazelcastListFactoryBean
     hazelcastlockfactorybean: HazelcastLockFactoryBean
 hazelcastinstanceservice: HazelcastInstanceService
+changelog: Changelog

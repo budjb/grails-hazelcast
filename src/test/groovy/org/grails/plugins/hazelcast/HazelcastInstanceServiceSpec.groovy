@@ -7,9 +7,12 @@ import spock.lang.Specification
 
 class HazelcastInstanceServiceSpec extends Specification {
     HazelcastInstanceService hazelcastInstanceService
+    HazelcastInstanceInstantiator instantiator
 
     def setup() {
-        hazelcastInstanceService = new HazelcastInstanceService([])
+        instantiator = new HazelcastInstanceInstantiator()
+        hazelcastInstanceService = new HazelcastInstanceService()
+        hazelcastInstanceService.instantiator = instantiator
     }
 
     void "When a map configuration is parsed, the proper Hazelcast configuration is returned"() {
@@ -38,7 +41,7 @@ class HazelcastInstanceServiceSpec extends Specification {
         ]
 
         when:
-        Config config = hazelcastInstanceService.parseConfig(instanceConfiguration)
+        Config config = instantiator.parseConfig(instanceConfiguration)
 
         then:
         config
@@ -59,7 +62,7 @@ class HazelcastInstanceServiceSpec extends Specification {
         ]
 
         when:
-        hazelcastInstanceService.parseConfig(instanceConfiguration)
+        instantiator.parseConfig(instanceConfiguration)
 
         then:
         thrown IllegalArgumentException
@@ -85,10 +88,9 @@ class HazelcastInstanceServiceSpec extends Specification {
                 ]
             ]
         ]
-        hazelcastInstanceService = new HazelcastInstanceService(instanceConfigurations)
 
         when:
-        hazelcastInstanceService.afterPropertiesSet()
+        instantiator.createInstances(instanceConfigurations)
 
         then:
         HazelcastInstance instance = Hazelcast.getHazelcastInstanceByName('instance1')
@@ -119,8 +121,7 @@ class HazelcastInstanceServiceSpec extends Specification {
                 ]
             ]
         ]
-        hazelcastInstanceService = new HazelcastInstanceService(instanceConfigurations)
-        hazelcastInstanceService.afterPropertiesSet()
+        instantiator.createInstances(instanceConfigurations)
 
         when:
         hazelcastInstanceService.shutdownInstance(INSTANCE_NAME)

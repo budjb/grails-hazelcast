@@ -23,7 +23,8 @@ class HazelcastInstanceFactoryBeanSpec extends Specification {
         config.instanceName = 'tmp'
         config.networkConfig.join.multicastConfig.enabled = false
 
-        HazelcastInstanceService hazelcastInstanceService = new HazelcastInstanceService([])
+        HazelcastInstanceService hazelcastInstanceService = new HazelcastInstanceService()
+        hazelcastInstanceService.instantiator = new HazelcastInstanceInstantiator()
         HazelcastInstance instance = hazelcastInstanceService.createInstance(config)
 
         HazelcastInstanceFactoryBean factoryBean = new HazelcastInstanceFactoryBean()
