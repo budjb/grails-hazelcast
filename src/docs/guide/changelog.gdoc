@@ -1,2 +1,5 @@
+h3. 1.0.2
+* Add @getInstances()@ method to @HazelcastInstanceService@.
+
 h3. 1.0.1
 * Create Hazelcast instances much earlier in the initialization process.

@@ -54,6 +54,15 @@ class HazelcastInstanceService implements InitializingBean {
     }
 
     /**
+     * Returns all available Hazelcast instances.
+     *
+     * @return
+     */
+    Collection<HazelcastInstance> getInstances() {
+        Hazelcast.getAllHazelcastInstances()
+    }
+
+    /**
      * Shuts down a Hazelcast instance.
      *
      * @param name Name of the Hazelcast instance.
