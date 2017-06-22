@@ -38,12 +38,10 @@ class HazelcastLocktFactoryBeanSpec extends Specification {
         config.instanceName = 'tmp'
         config.networkConfig.join.multicastConfig.enabled = false
 
-        HazelcastInstanceService hazelcastInstanceService = new HazelcastInstanceService()
-        hazelcastInstanceService.instantiator = new HazelcastInstanceInstantiator()
-        hazelcastInstanceService.createInstance(config)
+        HazelcastInstanceService.getInstance().createInstance(config)
 
         HazelcastLockFactoryBean factoryBean = new HazelcastLockFactoryBean()
-        factoryBean.hazelcastInstanceService = hazelcastInstanceService
+        factoryBean.hazelcastInstanceService = HazelcastInstanceService.getInstance()
         factoryBean.instanceName = 'tmp'
         factoryBean.lockName = 'foo'
         factoryBean.afterPropertiesSet()
@@ -56,6 +54,6 @@ class HazelcastLocktFactoryBeanSpec extends Specification {
         object == Hazelcast.getHazelcastInstanceByName('tmp').getLock('foo')
 
         cleanup:
-        hazelcastInstanceService.shutdownInstance(factoryBean.instanceName)
+        HazelcastInstanceService.getInstance().shutdownInstance(factoryBean.instanceName)
     }
 }

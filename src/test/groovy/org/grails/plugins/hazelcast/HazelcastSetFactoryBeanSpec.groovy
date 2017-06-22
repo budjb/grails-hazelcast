@@ -36,12 +36,10 @@ class HazelcastSetFactoryBeanSpec extends Specification {
         config.instanceName = 'tmp'
         config.networkConfig.join.multicastConfig.enabled = false
 
-        HazelcastInstanceService hazelcastInstanceService = new HazelcastInstanceService()
-        hazelcastInstanceService.instantiator = new HazelcastInstanceInstantiator()
-        hazelcastInstanceService.createInstance(config)
+        HazelcastInstanceService.getInstance().createInstance(config)
 
         HazelcastSetFactoryBean factoryBean = new HazelcastSetFactoryBean()
-        factoryBean.hazelcastInstanceService = hazelcastInstanceService
+        factoryBean.hazelcastInstanceService = HazelcastInstanceService.getInstance()
         factoryBean.instanceName = 'tmp'
         factoryBean.setName = 'foo'
         factoryBean.afterPropertiesSet()
@@ -54,6 +52,6 @@ class HazelcastSetFactoryBeanSpec extends Specification {
         object == Hazelcast.getHazelcastInstanceByName('tmp').getSet('foo')
 
         cleanup:
-        hazelcastInstanceService.shutdownInstance(factoryBean.instanceName)
+        HazelcastInstanceService.getInstance().shutdownInstance(factoryBean.instanceName)
     }
 }

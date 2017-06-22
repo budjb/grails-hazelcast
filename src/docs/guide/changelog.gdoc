@@ -1,3 +1,6 @@
+h3. 1.0.3
+* Made @HazelcastInstanceService@ and @HazelcastInstanceInstantiator@ Groovy singletons.
+
 h3. 1.0.2
 * Add @getInstances()@ method to @HazelcastInstanceService@.
 

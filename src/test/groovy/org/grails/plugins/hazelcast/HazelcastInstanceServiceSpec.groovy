@@ -6,15 +6,6 @@ import com.hazelcast.core.HazelcastInstance
 import spock.lang.Specification
 
 class HazelcastInstanceServiceSpec extends Specification {
-    HazelcastInstanceService hazelcastInstanceService
-    HazelcastInstanceInstantiator instantiator
-
-    def setup() {
-        instantiator = new HazelcastInstanceInstantiator()
-        hazelcastInstanceService = new HazelcastInstanceService()
-        hazelcastInstanceService.instantiator = instantiator
-    }
-
     void "When a map configuration is parsed, the proper Hazelcast configuration is returned"() {
         setup:
         final String INSTANCE_NAME = 'instance1'
@@ -41,7 +32,7 @@ class HazelcastInstanceServiceSpec extends Specification {
         ]
 
         when:
-        Config config = instantiator.parseConfig(instanceConfiguration)
+        Config config = HazelcastInstanceInstantiator.getInstance().parseConfig(instanceConfiguration)
 
         then:
         config
@@ -62,7 +53,7 @@ class HazelcastInstanceServiceSpec extends Specification {
         ]
 
         when:
-        instantiator.parseConfig(instanceConfiguration)
+        HazelcastInstanceInstantiator.getInstance().parseConfig(instanceConfiguration)
 
         then:
         thrown IllegalArgumentException
@@ -90,12 +81,12 @@ class HazelcastInstanceServiceSpec extends Specification {
         ]
 
         when:
-        instantiator.createInstances(instanceConfigurations)
+        HazelcastInstanceInstantiator.getInstance().createInstances(instanceConfigurations)
 
         then:
         HazelcastInstance instance = Hazelcast.getHazelcastInstanceByName('instance1')
         instance.name == INSTANCE_NAME
-        hazelcastInstanceService.getInstance(INSTANCE_NAME) == instance
+        HazelcastInstanceService.getInstance().getInstance(INSTANCE_NAME) == instance
 
         cleanup:
         Hazelcast.getHazelcastInstanceByName(INSTANCE_NAME).shutdown()
@@ -121,10 +112,10 @@ class HazelcastInstanceServiceSpec extends Specification {
                 ]
             ]
         ]
-        instantiator.createInstances(instanceConfigurations)
+        HazelcastInstanceInstantiator.getInstance().createInstances(instanceConfigurations)
 
         when:
-        hazelcastInstanceService.shutdownInstance(INSTANCE_NAME)
+        HazelcastInstanceService.getInstance().shutdownInstance(INSTANCE_NAME)
 
         then:
         !Hazelcast.getHazelcastInstanceByName(INSTANCE_NAME)
