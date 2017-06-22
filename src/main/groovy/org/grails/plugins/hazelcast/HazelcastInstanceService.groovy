@@ -3,18 +3,32 @@ package org.grails.plugins.hazelcast
 import com.hazelcast.config.Config
 import com.hazelcast.core.Hazelcast
 import com.hazelcast.core.HazelcastInstance
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.springframework.beans.factory.InitializingBean
 
 /**
  * Service that assists with creating and retrieving Hazelcast instances.
  */
 @Slf4j
-class HazelcastInstanceService implements InitializingBean {
+@Singleton
+@CompileStatic
+class HazelcastInstanceService {
     /**
      * Hazelcast instance instantiator.
      */
     HazelcastInstanceInstantiator instantiator
+
+    /**
+     * Potentially lazy loads the hazelcast instance instantiator.
+     *
+     * @return
+     */
+    HazelcastInstanceInstantiator getInstantiator() {
+        if (!instantiator) {
+            instantiator = HazelcastInstanceInstantiator.getInstance()
+        }
+        return instantiator
+    }
 
     /**
      * Creates a new Hazelcast instance from the given configuration.
@@ -23,7 +37,7 @@ class HazelcastInstanceService implements InitializingBean {
      * @return HazelcastInstance
      */
     HazelcastInstance createInstance(Config configuration) {
-        return instantiator.createInstance(configuration)
+        return getInstantiator().createInstance(configuration)
     }
 
     /**
@@ -33,7 +47,7 @@ class HazelcastInstanceService implements InitializingBean {
      * @return Config
      */
     HazelcastInstance createInstance(Map instanceConfiguration) {
-        return instantiator.createInstance(instanceConfiguration)
+        return getInstantiator().createInstance(instanceConfiguration)
     }
 
     /**
@@ -77,13 +91,5 @@ class HazelcastInstanceService implements InitializingBean {
      */
     void shutdownAll() {
         Hazelcast.shutdownAll()
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    void afterPropertiesSet() throws Exception {
-        assert instantiator != null, 'HazelcastInstanceInstantiator must not be null'
     }
 }

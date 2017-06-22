@@ -1,6 +1,7 @@
 package org.grails.plugins.hazelcast
 
 import grails.plugins.Plugin
+import org.grails.plugins.hazelcast.beans.HazelcastInstanceServiceFactoryBean
 
 class HazelcastGrailsPlugin extends Plugin {
     /**
@@ -64,12 +65,10 @@ class HazelcastGrailsPlugin extends Plugin {
             // Creating the Hazelcast instances must happen very early in the initialization
             // process so that other beans that require it (such as servlet filters) have their
             // requires instances already created.
-            HazelcastInstanceInstantiator instantiator = new HazelcastInstanceInstantiator()
+            HazelcastInstanceInstantiator instantiator = HazelcastInstanceInstantiator.getInstance()
             instantiator.createInstances(grailsApplication.config.hazelcast.instances ?: [])
 
-            hazelcastInstanceService(HazelcastInstanceService) {
-                delegate.instantiator = instantiator
-            }
+            hazelcastInstanceService(HazelcastInstanceServiceFactoryBean)
         }
     }
 

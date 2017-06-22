@@ -4,6 +4,7 @@ import com.hazelcast.config.Config
 import com.hazelcast.core.Hazelcast
 import com.hazelcast.core.HazelcastInstance
 
+@Singleton
 class HazelcastInstanceInstantiator {
     /**
      * Creates any instances configured by the given list/map structure.
@@ -23,7 +24,7 @@ class HazelcastInstanceInstantiator {
      * @return HazelcastInstance
      */
     HazelcastInstance createInstance(Config configuration) {
-        return Hazelcast.newHazelcastInstance(configuration)
+        return Hazelcast.getOrCreateHazelcastInstance(configuration)
     }
 
     /**
