@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Hazelcast Factory Beans 1.0.3</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/configuration.html"><strong>2</strong><span>Configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/factorybeans.html"><strong>3</strong><span>Hazelcast Factory Beans</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/hazelcastinstanceservice.html"><strong>4</strong><span>HazelcastInstanceService</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/changelog.html"><strong>5</strong><span>Changelog</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/configuration.html">&lt;&lt; <strong>2</strong><span>Configuration</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/hazelcastinstanceservice.html"><strong>4</strong><span>HazelcastInstanceService</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3 Hazelcast Factory Beans - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Bud Byrd, Anil Manthina, Aaron Brown</p>
+
+                    <p><strong>Version:</strong> 1.0.3</p>
+
+                    
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#hazelcastmapfactorybean"><strong>3.1</strong><span>HazelcastMapFactoryBean</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#hazelcastsetfactorybean"><strong>3.2</strong><span>HazelcastSetFactoryBean</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#hazelcastlistfactorybean"><strong>3.3</strong><span>HazelcastListFactoryBean</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#hazelcastlockfactorybean"><strong>3.4</strong><span>HazelcastLockFactoryBean</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="factorybeans">3 Hazelcast Factory Beans</h1>
+The plugin provides a set of factory beans which can be used to easily create sturctures such as <code>Map</code>, <code>List</code>, and
+<code>Set</code>, that are integrated with Hazelcast.
+
+
+
+<h2 id="hazelcastmapfactorybean">3.1 HazelcastMapFactoryBean</h2>
+The <strong class="bold">HazelcastMapFactoryBean</strong> can be used to create Hazelcast Maps as beans by declaring them in
+<code>grails-app/init/&#60;package&#62;/Application.groovy</code>:<p class="paragraph"/><div class="code"><pre>class Application <span class="java&#45;keyword">extends</span> GrailsAutoConfiguration &#123;
+    <span class="java&#45;keyword">static</span> void main(<span class="java&#45;object">String</span>&#91;&#93; args) &#123;
+        GrailsApp.run(Application, args)
+    &#125;<p class="paragraph"/>    @Override
+    Closure doWithSpring() &#123;&#123;&#45;&#62;
+        'myMap'(HazelcastMapFactoryBean) &#123;
+            instanceName = 'myInstance'
+            mapName = 'myMap'
+        &#125;<p class="paragraph"/>        'myClass'(MyClass) &#123;
+            // For Maps, it may be best to reference
+            // rather than use @Autowired due to bean
+            // validation logic.
+            myMap = ref('myMap')
+        &#125;
+    &#125;&#125;
+&#125;</pre></div><p class="paragraph"/>The bean can then be used in other managed Spring beans:<p class="paragraph"/><div class="code"><pre>class MyClass &#123;
+    /&#42;&#42;
+     &#42; MyMap
+     &#42;/
+    Map&#60;<span class="java&#45;object">String</span>, <span class="java&#45;object">Object</span>&#62; myMap<p class="paragraph"/>    cache(<span class="java&#45;object">String</span> key, <span class="java&#45;object">Object</span> value) &#123;
+        myMap&#91;(key)&#91; = value
+    &#125;<p class="paragraph"/>    <span class="java&#45;object">Object</span> fetch(<span class="java&#45;object">String</span> key) &#123;
+        <span class="java&#45;keyword">return</span> myMap&#91;key&#93;
+    &#125;
+&#125;</pre></div>
+
+
+
+<h2 id="hazelcastsetfactorybean">3.2 HazelcastSetFactoryBean</h2>
+The <strong class="bold">HazelcastSetFactoryBean</strong> can be used to create Hazelcast Sets as beans by declaring them in
+<code>grails-app/init/&#60;package&#62;/Application.groovy</code>:<p class="paragraph"/><div class="code"><pre>class Application <span class="java&#45;keyword">extends</span> GrailsAutoConfiguration &#123;
+    <span class="java&#45;keyword">static</span> void main(<span class="java&#45;object">String</span>&#91;&#93; args) &#123;
+        GrailsApp.run(Application, args)
+    &#125;<p class="paragraph"/>    @Override
+    Closure doWithSpring() &#123;&#123;&#45;&#62;
+        'myLSet'(HazelcastSetFactoryBean) &#123;
+            instanceName = 'myInstance'
+            setName = 'mySet'
+        &#125;
+    &#125;&#125;
+&#125;</pre></div><p class="paragraph"/>The bean can then be used in other managed Spring beans:<p class="paragraph"/><div class="code"><pre>class MyClass &#123;
+    /&#42;&#42;
+     &#42; MySet
+     &#42;/
+    @Autowired
+    Set&#60;<span class="java&#45;object">String</span>&#62; mySet<p class="paragraph"/>    void process() &#123;
+        mySet.putAll('foo', 'bar', 'baz')
+        <span class="java&#45;object">String</span> foo = myList&#91;0&#93;
+        myList &#60;&#60; &#91;'foo'&#93;
+        myList&#91;0&#93; != myList&#91;&#45;1&#93;
+    &#125;
+&#125;</pre></div>
+
+
+
+<h2 id="hazelcastlistfactorybean">3.3 HazelcastListFactoryBean</h2>
+The <strong class="bold">HazelcastListFactoryBean</strong> can be used to create Hazelcast Lists as beans by declaring them in
+<code>grails-app/init/&#60;package&#62;/Application.groovy</code>:<p class="paragraph"/><div class="code"><pre>class Application <span class="java&#45;keyword">extends</span> GrailsAutoConfiguration &#123;
+    <span class="java&#45;keyword">static</span> void main(<span class="java&#45;object">String</span>&#91;&#93; args) &#123;
+        GrailsApp.run(Application, args)
+    &#125;<p class="paragraph"/>    @Override
+    Closure doWithSpring() &#123;&#123;&#45;&#62;
+        'myList'(HazelcastListFactoryBean) &#123;
+            instanceName = 'myInstance'
+            listName = 'myList'
+        &#125;
+    &#125;&#125;
+&#125;</pre></div><p class="paragraph"/>The bean can then be used in other managed Spring beans:<p class="paragraph"/><div class="code"><pre>class MyClass &#123;
+    /&#42;&#42;
+     &#42; MyList
+     &#42;/
+    @Autowired
+    List&#60;<span class="java&#45;object">String</span>&#62; myList<p class="paragraph"/>    void process() &#123;
+        myList.putAll('foo', 'bar', 'baz')
+        <span class="java&#45;object">String</span> foo = myList&#91;0&#93;
+        myList &#60;&#60; &#91;'foo'&#93;
+        myList&#91;0&#93; == myList&#91;&#45;1&#93;
+    &#125;
+&#125;</pre></div>
+
+
+
+<h2 id="hazelcastlockfactorybean">3.4 HazelcastLockFactoryBean</h2>
+The <strong class="bold">HazelcastLockFactoryBean</strong> can be used to create Hazelcast Locks as beans by declaring them in
+<code>grails-app/init/&#60;package&#62;/Application.groovy</code>:<p class="paragraph"/><div class="code"><pre>class Application <span class="java&#45;keyword">extends</span> GrailsAutoConfiguration &#123;
+    <span class="java&#45;keyword">static</span> void main(<span class="java&#45;object">String</span>&#91;&#93; args) &#123;
+        GrailsApp.run(Application, args)
+    &#125;<p class="paragraph"/>    @Override
+    Closure doWithSpring() &#123;&#123;&#45;&#62;
+        'myLLock'(HazelcastLockFactoryBean) &#123;
+            instanceName = 'myInstance'
+            lockName = 'myLock'
+        &#125;
+    &#125;&#125;
+&#125;</pre></div><p class="paragraph"/>The bean can then be used in other managed Spring beans:<p class="paragraph"/><div class="code"><pre>@Slf4j
+class MyClass &#123;
+    /&#42;&#42;
+     &#42; MyLock
+     &#42;/
+    @Autowired
+    ILock myLock<p class="paragraph"/>    void process() &#123;
+        <span class="java&#45;keyword">if</span> (!lock.tryLock(60000, TimeUnit.MILLISECONDS, 600000, TimeUnit.MILLISECONDS)) &#123;
+            log.warn(<span class="java&#45;quote">"Lock failed."</span>)
+            <span class="java&#45;keyword">return</span>
+        &#125;<p class="paragraph"/>        <span class="java&#45;keyword">try</span> &#123;
+            // &#8230;
+        &#125; <span class="java&#45;keyword">catch</span> (Exception e) &#123;
+            // &#8230;
+        &#125; <span class="java&#45;keyword">finally</span> &#123;
+            <span class="java&#45;keyword">try</span> &#123;
+                lock.unlock()
+                 log.trace(<span class="java&#45;quote">"Mutex lock released"</span>)
+            &#125; <span class="java&#45;keyword">catch</span> (IllegalMonitorStateException ignored) &#123;
+                log.warn(<span class="java&#45;quote">"lock expired"</span>)
+            &#125;
+        &#125;
+    &#125;
+&#125;</pre></div>
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/configuration.html">&lt;&lt; <strong>2</strong><span>Configuration</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/hazelcastinstanceservice.html"><strong>4</strong><span>HazelcastInstanceService</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
