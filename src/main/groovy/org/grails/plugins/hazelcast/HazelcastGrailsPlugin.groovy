@@ -1,7 +1,7 @@
 package org.grails.plugins.hazelcast
 
+import com.hazelcast.config.Config
 import grails.plugins.Plugin
-import org.grails.plugins.hazelcast.beans.HazelcastInstanceServiceFactoryBean
 
 class HazelcastGrailsPlugin extends Plugin {
     /**
@@ -57,25 +57,31 @@ class HazelcastGrailsPlugin extends Plugin {
      */
     def scm = [url: 'https://github.com/budjb/grails-hazelcast']
 
-    /**
-     * Spring bean creation.
-     */
+    @Override
     Closure doWithSpring() {
         { ->
-            // Creating the Hazelcast instances must happen very early in the initialization
-            // process so that other beans that require it (such as servlet filters) have their
-            // requires instances already created.
-            HazelcastInstanceInstantiator instantiator = HazelcastInstanceInstantiator.getInstance()
-            instantiator.createInstances(grailsApplication.config.hazelcast.instances ?: [])
-
-            hazelcastInstanceService(HazelcastInstanceServiceFactoryBean)
+            hazelcastConfigLoader(HazelcastConfigLoader, grailsApplication.config.hazelcast.instances ?: [])
+            hazelcastInstanceService(HazelcastInstanceService)
         }
     }
 
     /**
-     * Shutdown handler.
-     *
-     * @param event
+     * {@inheritDoc}
+     */
+    @Override
+    void onStartup(Map<String, Object> event) {
+        HazelcastInstanceService hazelcastInstanceService = applicationContext.getBean('hazelcastInstanceService', HazelcastInstanceService)
+        HazelcastConfigLoader hazelcastConfigLoader = applicationContext.getBean('hazelcastConfigLoader', HazelcastConfigLoader)
+
+        for (Config config : hazelcastConfigLoader.getInstanceConfigurations()) {
+            hazelcastInstanceService.createInstance(config)
+        }
+
+        hazelcastConfigLoader.getInstanceConfigurations().clear()
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     void onShutdown(Map<String, Object> event) {

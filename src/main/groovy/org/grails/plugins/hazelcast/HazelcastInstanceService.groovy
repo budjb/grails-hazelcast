@@ -10,44 +10,16 @@ import groovy.util.logging.Slf4j
  * Service that assists with creating and retrieving Hazelcast instances.
  */
 @Slf4j
-@Singleton
 @CompileStatic
 class HazelcastInstanceService {
     /**
-     * Hazelcast instance instantiator.
-     */
-    HazelcastInstanceInstantiator instantiator
-
-    /**
-     * Potentially lazy loads the hazelcast instance instantiator.
+     * Creates a new Hazelcast instance with the given configuration.
      *
-     * @return
+     * @param config Hazelcast instance configuration.
+     * @return The new Hazelcast instance.
      */
-    HazelcastInstanceInstantiator getInstantiator() {
-        if (!instantiator) {
-            instantiator = HazelcastInstanceInstantiator.getInstance()
-        }
-        return instantiator
-    }
-
-    /**
-     * Creates a new Hazelcast instance from the given configuration.
-     *
-     * @param configuration
-     * @return HazelcastInstance
-     */
-    HazelcastInstance createInstance(Config configuration) {
-        return getInstantiator().createInstance(configuration)
-    }
-
-    /**
-     * This method will be used to create the hazelcast config.
-     *
-     * @param instanceConfiguration
-     * @return Config
-     */
-    HazelcastInstance createInstance(Map instanceConfiguration) {
-        return getInstantiator().createInstance(instanceConfiguration)
+    HazelcastInstance createInstance(Config config) {
+        return Hazelcast.newHazelcastInstance(config)
     }
 
     /**
@@ -73,7 +45,7 @@ class HazelcastInstanceService {
      * @return
      */
     Collection<HazelcastInstance> getInstances() {
-        Hazelcast.getAllHazelcastInstances()
+        return Hazelcast.getAllHazelcastInstances()
     }
 
     /**

@@ -1,7 +1,7 @@
 package org.grails.plugins.hazelcast
 
-import com.hazelcast.config.Config
-import com.hazelcast.core.Hazelcast
+import com.hazelcast.core.HazelcastInstance
+import com.hazelcast.core.ISet
 import org.grails.plugins.hazelcast.beans.HazelcastSetFactoryBean
 import spock.lang.Specification
 
@@ -32,26 +32,23 @@ class HazelcastSetFactoryBeanSpec extends Specification {
 
     void 'When a HazelcastSetFactoryBean is created, it returns the correct Hazelcast set'() {
         setup:
-        Config config = new Config()
-        config.instanceName = 'tmp'
-        config.networkConfig.join.multicastConfig.enabled = false
+        ISet set = Mock(ISet)
 
-        HazelcastInstanceService.getInstance().createInstance(config)
+        HazelcastInstance hazelcastInstance = Mock(HazelcastInstance)
+        hazelcastInstance.getSet('foo') >> set
+
+        HazelcastInstanceService hazelcastInstanceService = Mock(HazelcastInstanceService)
+        hazelcastInstanceService.getInstance('tmp') >> hazelcastInstance
 
         HazelcastSetFactoryBean factoryBean = new HazelcastSetFactoryBean()
-        factoryBean.hazelcastInstanceService = HazelcastInstanceService.getInstance()
+        factoryBean.hazelcastInstanceService = hazelcastInstanceService
         factoryBean.instanceName = 'tmp'
         factoryBean.setName = 'foo'
-        factoryBean.afterPropertiesSet()
 
         when:
         Object object = factoryBean.getObject()
 
         then:
-        object instanceof Set
-        object == Hazelcast.getHazelcastInstanceByName('tmp').getSet('foo')
-
-        cleanup:
-        HazelcastInstanceService.getInstance().shutdownInstance(factoryBean.instanceName)
+        object.is(set)
     }
 }

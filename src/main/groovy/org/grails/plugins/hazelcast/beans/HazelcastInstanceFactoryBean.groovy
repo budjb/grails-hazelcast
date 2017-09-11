@@ -1,6 +1,8 @@
 package org.grails.plugins.hazelcast.beans
 
+import com.hazelcast.config.Config
 import com.hazelcast.core.HazelcastInstance
+import org.grails.plugins.hazelcast.HazelcastConfigLoader
 import org.grails.plugins.hazelcast.HazelcastInstanceService
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.beans.factory.InitializingBean
@@ -17,25 +19,54 @@ class HazelcastInstanceFactoryBean implements FactoryBean<HazelcastInstance>, In
     HazelcastInstanceService hazelcastInstanceService
 
     /**
+     * Hazelcast configuration loader.
+     */
+    @Autowired
+    HazelcastConfigLoader hazelcastConfigLoader
+
+    /**
      * Name of the hazelcast instance that should contain the map.
      */
     String instanceName
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     HazelcastInstance getObject() throws Exception {
-        return hazelcastInstanceService.getInstance(instanceName)
+        try {
+            return hazelcastInstanceService.getInstance(instanceName)
+        }
+        catch (IllegalArgumentException e) {
+            Config config = hazelcastConfigLoader.retrieveAndRemoveInstanceConfiguration(instanceName)
+
+            if (config != null) {
+                return hazelcastInstanceService.createInstance(config)
+            }
+
+            throw e
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     Class<?> getObjectType() {
         return HazelcastInstance.class
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     boolean isSingleton() {
         return true
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     void afterPropertiesSet() throws Exception {
         if (!instanceName) {

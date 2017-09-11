@@ -1,44 +1,84 @@
 package org.grails.plugins.hazelcast
 
 import com.hazelcast.config.Config
-import com.hazelcast.core.Hazelcast
-import com.hazelcast.core.HazelcastInstance
 
-@Singleton
-class HazelcastInstanceInstantiator {
+/**
+ * Loads Hazelcast configuration from the Grails config and stores them until
+ * the service is ready to create the actual instances. Other beans may access
+ * the loader before the services does to create instances themselves, depending
+ * on bean load order.
+ */
+class HazelcastConfigLoader {
     /**
-     * Creates any instances configured by the given list/map structure.
-     *
-     * @param configuration
+     * List of Hazelcast {@link Config} objects loaded from map configurations.
      */
-    void createInstances(List<Map> configuration) {
-        configuration?.each { config ->
-            createInstance(config)
+    final List<Config> instanceConfigurations = []
+
+    /**
+     * Base constructor.
+     */
+    HazelcastConfigLoader() {
+
+    }
+
+    /**
+     * Creates Hazelcast {@link Config} objects from the given map configuration.
+     *
+     * @param grailsConfig List of Maps containing Hazelcast instance configurations.
+     */
+    HazelcastConfigLoader(List<Map> grailsConfig) {
+        for (Map config : grailsConfig) {
+            loadConfig(config)
         }
     }
 
     /**
-     * Creates a new Hazelcast instance from the given configuration.
+     * Creates a Hazelcast {@link Config} object from the given map configuration.
      *
-     * @param configuration
-     * @return HazelcastInstance
+     * @param grailsConfig
+     * @return
      */
-    HazelcastInstance createInstance(Config configuration) {
-        return Hazelcast.getOrCreateHazelcastInstance(configuration)
+    Config loadConfig(Map grailsConfig) {
+        Config config = parseConfig(grailsConfig)
+        instanceConfigurations.add(config)
+        return config
     }
 
     /**
-     * This method will be used to create the hazelcast config.
+     * Returns the instance with the given name, or null if it doesn't exist.
      *
-     * @param instanceConfiguration
-     * @return Config
+     * @param instanceName
+     * @return
      */
-    HazelcastInstance createInstance(Map instanceConfiguration) {
-        return createInstance(parseConfig(instanceConfiguration))
+    Config retrieveInstanceConfiguration(String instanceName) {
+        for (Config config : getInstanceConfigurations()) {
+            if (config.getInstanceName() == instanceName) {
+                return config
+            }
+        }
+
+        return null
     }
 
     /**
-     * Creates a Hazelcast {@link Config} object from the configuration contained the given map.
+     * Returns the instance with the given name, or null if it doesn't exist.
+     * If the configuration does exist, remove it from the loader registry.
+     *
+     * @param instanceName
+     * @return
+     */
+    Config retrieveAndRemoveInstanceConfiguration(String instanceName) {
+        Config config = retrieveInstanceConfiguration(instanceName)
+
+        if (config != null) {
+            instanceConfigurations.remove(config)
+        }
+
+        return config
+    }
+
+    /**
+     * Creates a Hazelcast {@link com.hazelcast.config.Config} object from the configuration contained the given map.
      *
      * @param configuration Map containing the configuration of the Hazelcast instance.
      * @return

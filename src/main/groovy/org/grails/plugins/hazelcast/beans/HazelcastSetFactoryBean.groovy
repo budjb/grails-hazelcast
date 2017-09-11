@@ -1,5 +1,8 @@
 package org.grails.plugins.hazelcast.beans
 
+import com.hazelcast.config.Config
+import com.hazelcast.core.HazelcastInstance
+import org.grails.plugins.hazelcast.HazelcastConfigLoader
 import org.grails.plugins.hazelcast.HazelcastInstanceService
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.beans.factory.InitializingBean
@@ -18,6 +21,12 @@ class HazelcastSetFactoryBean<T> implements FactoryBean<Set<T>>, InitializingBea
     HazelcastInstanceService hazelcastInstanceService
 
     /**
+     * Hazelcast configuration loader.
+     */
+    @Autowired
+    HazelcastConfigLoader hazelcastConfigLoader
+
+    /**
      * Name of the hazelcast instance that should contain the map.
      */
     String instanceName
@@ -32,7 +41,22 @@ class HazelcastSetFactoryBean<T> implements FactoryBean<Set<T>>, InitializingBea
      */
     @Override
     Set<T> getObject() throws Exception {
-        return hazelcastInstanceService.getInstance(instanceName).getSet(setName)
+        HazelcastInstance hazelcastInstance
+
+        try {
+            hazelcastInstance = hazelcastInstanceService.getInstance(instanceName)
+        }
+        catch (IllegalArgumentException e) {
+            Config config = hazelcastConfigLoader.retrieveAndRemoveInstanceConfiguration(instanceName)
+
+            if (config == null) {
+                throw e
+            }
+
+            hazelcastInstance = hazelcastInstanceService.createInstance(config)
+        }
+
+        return hazelcastInstance.getSet(setName)
     }
 
     /**

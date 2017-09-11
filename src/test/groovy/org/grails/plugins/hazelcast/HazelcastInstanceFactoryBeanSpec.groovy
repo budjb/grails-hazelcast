@@ -1,6 +1,5 @@
 package org.grails.plugins.hazelcast
 
-import com.hazelcast.config.Config
 import com.hazelcast.core.HazelcastInstance
 import org.grails.plugins.hazelcast.beans.HazelcastInstanceFactoryBean
 import spock.lang.Specification
@@ -19,26 +18,19 @@ class HazelcastInstanceFactoryBeanSpec extends Specification {
 
     void 'When a HazelcastInstanceFactoryBean is created, it returns the correct Hazelcast instance'() {
         setup:
-        Config config = new Config()
-        config.instanceName = 'tmp'
-        config.networkConfig.join.multicastConfig.enabled = false
+        HazelcastInstance hazelcastInstance = Mock(HazelcastInstance)
 
-        HazelcastInstance instance = HazelcastInstanceService.getInstance().createInstance(config)
+        HazelcastInstanceService hazelcastInstanceService = Mock(HazelcastInstanceService)
+        hazelcastInstanceService.getInstance('tmp') >> hazelcastInstance
 
         HazelcastInstanceFactoryBean factoryBean = new HazelcastInstanceFactoryBean()
-        factoryBean.hazelcastInstanceService = HazelcastInstanceService.getInstance()
+        factoryBean.hazelcastInstanceService = hazelcastInstanceService
         factoryBean.instanceName = 'tmp'
-        factoryBean.afterPropertiesSet()
 
         when:
         Object object = factoryBean.getObject()
 
         then:
-        object instanceof HazelcastInstance
-        ((HazelcastInstance) object).config.instanceName == 'tmp'
-        object.is(instance)
-
-        cleanup:
-        instance.shutdown()
+        object.is(hazelcastInstance)
     }
 }

@@ -1,7 +1,7 @@
 package org.grails.plugins.hazelcast
 
-import com.hazelcast.config.Config
-import com.hazelcast.core.Hazelcast
+import com.hazelcast.core.HazelcastInstance
+import com.hazelcast.core.IMap
 import org.grails.plugins.hazelcast.beans.HazelcastMapFactoryBean
 import spock.lang.Specification
 
@@ -32,26 +32,23 @@ class HazelcastMapFactoryBeanSpec extends Specification {
 
     void 'When a HazelcastMapFactoryBean is created, it returns the correct Hazelcast map'() {
         setup:
-        Config config = new Config()
-        config.instanceName = 'tmp'
-        config.networkConfig.join.multicastConfig.enabled = false
+        IMap map = Mock(IMap)
 
-        HazelcastInstanceService.getInstance().createInstance(config)
+        HazelcastInstance hazelcastInstance = Mock(HazelcastInstance)
+        hazelcastInstance.getMap('foo') >> map
+
+        HazelcastInstanceService hazelcastInstanceService = Mock(HazelcastInstanceService)
+        hazelcastInstanceService.getInstance('tmp') >> hazelcastInstance
 
         HazelcastMapFactoryBean factoryBean = new HazelcastMapFactoryBean()
-        factoryBean.hazelcastInstanceService = HazelcastInstanceService.getInstance()
+        factoryBean.hazelcastInstanceService = hazelcastInstanceService
         factoryBean.instanceName = 'tmp'
         factoryBean.mapName = 'foo'
-        factoryBean.afterPropertiesSet()
 
         when:
         Object object = factoryBean.getObject()
 
         then:
-        object instanceof Map
-        object == Hazelcast.getHazelcastInstanceByName('tmp').getMap('foo')
-
-        cleanup:
-        HazelcastInstanceService.getInstance().shutdownInstance(factoryBean.instanceName)
+        object.is(map)
     }
 }
