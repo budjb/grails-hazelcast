@@ -61,23 +61,8 @@ class HazelcastGrailsPlugin extends Plugin {
     Closure doWithSpring() {
         { ->
             hazelcastConfigLoader(HazelcastConfigLoader, grailsApplication.config.hazelcast.instances ?: [])
-            hazelcastInstanceService(HazelcastInstanceService)
+            hazelcastInstanceService(HazelcastInstanceService, ref('hazelcastConfigLoader'))
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    void onStartup(Map<String, Object> event) {
-        HazelcastInstanceService hazelcastInstanceService = applicationContext.getBean('hazelcastInstanceService', HazelcastInstanceService)
-        HazelcastConfigLoader hazelcastConfigLoader = applicationContext.getBean('hazelcastConfigLoader', HazelcastConfigLoader)
-
-        for (Config config : hazelcastConfigLoader.getInstanceConfigurations()) {
-            hazelcastInstanceService.createInstance(config)
-        }
-
-        hazelcastConfigLoader.getInstanceConfigurations().clear()
     }
 
     /**
