@@ -1,3 +1,10 @@
+h3. 1.1.1
+* Moved the HazelcastService instantiation from Grails Lifecycle on Startup closer to HazelcastInstanceService
+instantiation.
+
+h3. 1.1.0
+* Separated Hazelcast Configuration loading from Instance instantiation.
+
 h3. 1.0.4
 * Updated hazelcast library to version 3.8.3.
 

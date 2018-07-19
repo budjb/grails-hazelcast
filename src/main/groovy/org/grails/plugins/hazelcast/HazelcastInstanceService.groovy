@@ -13,6 +13,24 @@ import groovy.util.logging.Slf4j
 @CompileStatic
 class HazelcastInstanceService {
     /**
+     * Constructor.
+     *
+     * <p>
+     * Initializes {@link HazelcastInstance HazelcastInstances}, then
+     * clears the configurations.
+     * </p>
+     *
+     * @param hazelcastConfigLoader
+     */
+    HazelcastInstanceService(HazelcastConfigLoader hazelcastConfigLoader) {
+        for (Config config : hazelcastConfigLoader.getInstanceConfigurations()) {
+            createInstance(config)
+        }
+
+        hazelcastConfigLoader.getInstanceConfigurations().clear()
+    }
+
+    /**
      * Creates a new Hazelcast instance with the given configuration.
      *
      * @param config Hazelcast instance configuration.
